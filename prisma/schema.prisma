@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  credits   Int      @default(20)
+  createdAt DateTime @default(now())
+
+  loginTokens   LoginToken[]
+  transactions  Transaction[]
+  audits        Audit[]
+}
+
+model LoginToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Transaction {
+  id        String   @id @default(cuid())
+  userId    String
+  amount    Int      // negative = deduction (e.g. -5 for audit)
+  reason    String   // e.g. "audit", "signup_bonus", "purchase"
+  balanceAfter Int?  // snapshot after tx for history
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Audit {
+  id              String   @id @default(cuid())
+  userId          String
+  url             String
+  performance     Int?
+  seo             Int?
+  accessibility   Int?
+  bestPractices   Int?
+  lighthouseJson  Json?
+  createdAt       DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
