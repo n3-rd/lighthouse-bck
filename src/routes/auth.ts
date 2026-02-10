@@ -3,7 +3,7 @@ import { randomBytes } from "node:crypto";
 import { prisma } from "../db.js";
 import { signToken, requireAuth } from "../middleware/auth.js";
 
-const router = Router();
+const router: Router = Router();
 const TOKEN_TTL_MS = 1000 * 60 * 30; // 30 min for magic link
 const INITIAL_CREDITS = 20;
 const BASE_URL = process.env.BASE_URL ?? "http://localhost:3000";
@@ -93,7 +93,7 @@ router.get("/verify", async (req: Request, res: Response): Promise<void> => {
     include: { user: true },
   });
   if (!record || record.expiresAt < new Date()) {
-    await prisma.loginToken.deleteMany({ where: { token } }).catch(() => {});
+    await prisma.loginToken.deleteMany({ where: { token } }).catch(() => { });
     res.status(400).json({ error: "Invalid or expired link" });
     return;
   }

@@ -33,26 +33,26 @@ model LoginToken {
 }
 
 model Transaction {
-  id        String   @id @default(cuid())
-  userId    String
-  amount    Int      // negative = deduction (e.g. -5 for audit)
-  reason    String   // e.g. "audit", "signup_bonus", "purchase"
-  balanceAfter Int?  // snapshot after tx for history
-  createdAt DateTime @default(now())
+  id           String   @id @default(cuid())
+  userId       String
+  amount       Int // negative = deduction (e.g. -5 for audit)
+  reason       String // e.g. "audit", "signup_bonus", "purchase"
+  balanceAfter Int? // snapshot after tx for history
+  createdAt    DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Audit {
-  id              String   @id @default(cuid())
-  userId          String
-  url             String
-  performance     Int?
-  seo             Int?
-  accessibility   Int?
-  bestPractices   Int?
-  lighthouseJson  Json?
-  createdAt       DateTime @default(now())
+  id             String   @id @default(cuid())
+  userId         String
+  url            String
+  performance    Int?
+  seo            Int?
+  accessibility  Int?
+  bestPractices  Int?
+  lighthouseJson Json?
+  createdAt      DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
