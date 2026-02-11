@@ -12,8 +12,15 @@ export type AuditResult = {
 
 const CHROME_PATHS = [
     process.env.CHROME_PATH,
+    // macOS
     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
     "/Applications/Chromium.app/Contents/MacOS/Chromium",
+    // Linux
+    "/usr/bin/google-chrome",
+    "/usr/bin/google-chrome-stable",
+    "/usr/bin/chromium",
+    "/usr/bin/chromium-browser",
+    "/snap/bin/chromium",
 ].filter(Boolean) as string[];
 
 function getChromePath(): string | undefined {
