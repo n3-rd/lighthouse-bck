@@ -12,10 +12,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   }
 
   const body = (await request.json()) as { url?: string };
-  const url = typeof body.url === 'string' ? body.url.trim() : '';
-
+  let url = typeof body.url === 'string' ? body.url.trim() : '';
   if (!url) {
     return json({ error: 'URL is required' }, { status: 400 });
+  }
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    url = 'https://' + url;
   }
 
   try {
@@ -42,7 +44,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
     const auditResult = await runLighthouseAudit(url);
 
-    await prisma.audit.create({
+    const audit = await prisma.audit.create({
       data: {
         userId: user.id,
         url,
@@ -96,6 +98,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 `;
 
     return json({
+      auditId: audit.id,
+      url,
       html: reportHtml,
       scores: {
         performance: auditResult.performance,

@@ -1,14 +1,13 @@
+@import 'tailwindcss';
+
 :root {
-  font-family: Inter, system-ui, sans-serif;
+  font-family: Inter, system-ui, DM Sans, Space Grotesk, sans-serif;
   line-height: 1.5;
   color: #1a1a1a;
-  background: #fafafa;
 }
 
 body {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 40px 20px;
+  @apply min-h-screen bg-white text-zinc-900;
 }
 
 input {
@@ -22,7 +21,6 @@ input {
 button {
   padding: 10px 20px;
   font-size: 16px;
-  background: #0067ff;
   color: white;
   border: none;
   cursor: pointer;
