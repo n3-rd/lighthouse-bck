@@ -30,7 +30,13 @@ function getChromePath(): string | undefined {
 export async function runLighthouseAudit(url: string): Promise<AuditResult> {
     const chromePath = getChromePath();
     const chrome = await chromeLauncher.launch({
-        chromeFlags: ["--headless"],
+        chromeFlags: [
+            "--headless",
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-gpu",
+        ],
         ...(chromePath && { chromePath }),
     });
     const options = { logLevel: "info", output: "json", port: chrome.port };
