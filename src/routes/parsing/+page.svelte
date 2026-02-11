@@ -1,5 +1,10 @@
 <script lang="ts">
+  import FeaturePage from '$lib/components/FeaturePage.svelte';
+  import { parsingPage } from '$lib/featurePageData.js';
 </script>
-<svelte:head><title>Parsing — ClearSKY</title></svelte:head>
-<div class="font-semibold text-lg">Parsing</div>
-<p class="mt-2 text-zinc-600">Coming soon.</p>
+
+<svelte:head>
+  <title>Parsing — ClearSKY Business Platform</title>
+</svelte:head>
+
+<FeaturePage config={parsingPage} />

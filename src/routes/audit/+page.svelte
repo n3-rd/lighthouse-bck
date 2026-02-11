@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import RadialScore from '$lib/components/RadialScore.svelte';
 
   let { data } = $props();
@@ -64,8 +63,8 @@
 </svelte:head>
 
 {#if !data.user}
-  <p class="text-zinc-600">Please complete a demo form first (ViewRoom or Marketing) to run an audit.</p>
-  <p class="mt-2"><a href="/viewroom" class="text-[rgb(24,87,155)] font-semibold underline">ViewRoom</a> · <a href="/marketing" class="text-[rgb(24,87,155)] font-semibold underline">Marketing</a></p>
+  <p class="text-zinc-600">Please complete a demo form first to run an audit.</p>
+  <p class="mt-2"><a href="/" class="text-[#18579b] font-semibold hover:underline">Home</a> · <a href="/viewroom" class="text-[#18579b] font-semibold hover:underline">ViewRoom</a> · <a href="/marketing" class="text-[#18579b] font-semibold hover:underline">Marketing</a></p>
 {:else}
   <p class="text-zinc-600">Signed in as {data.user.email} · {data.user.credits} credits (5 per audit)</p>
   <form class="mt-4 flex flex-col sm:flex-row gap-3 max-w-xl" onsubmit={(e) => { e.preventDefault(); runAudit(); }}>

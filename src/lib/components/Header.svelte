@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import logo from '../../static/logo.png';
 
   type NavItem = { href: string; label: string; slug: string };
   const navItems: NavItem[] = [
@@ -24,9 +25,8 @@
 <header class="relative overflow-hidden" data-testid="header-viewroom">
   <div class="flex flex-col md:flex-row items-center md:items-start justify-between gap-4">
     <div class="flex items-start gap-4">
-      <a href="/" class="h-auto md:h-28 w-48 md:w-80 flex flex-col items-start md:items-center justify-center md:ml-[-80px]" data-testid="img-logo-wrapper" aria-label="Logo">
-        <span class="text-xl md:text-2xl font-bold tracking-tight" style="color: rgb(24, 87, 155);">ClearSKY</span>
-        <span class="text-[10px] md:text-xs font-medium text-zinc-500">BUSINESS PLATFORM</span>
+      <a href="/" class="h-14 md:h-20 w-52 md:w-72 flex items-center md:ml-[-80px]" data-testid="img-logo-wrapper" aria-label="ClearSKY Business Platform">
+        <img src={logo} alt="ClearSKY Business Platform" class="h-full w-full object-contain" />
       </a>
       <nav class="flex flex-wrap items-center gap-4 md:gap-6 py-3" data-testid="nav-main">
         {#each navItems as item}

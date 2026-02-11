@@ -1,13 +1,26 @@
 @import 'tailwindcss';
 
 :root {
-  font-family: Inter, system-ui, DM Sans, Space Grotesk, sans-serif;
+  --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-sans);
   line-height: 1.5;
   color: #1a1a1a;
 }
 
 body {
-  @apply min-h-screen bg-white text-zinc-900;
+  @apply min-h-screen text-zinc-900 antialiased;
+  font-family: var(--font-sans);
+  background:
+    radial-gradient(900px 480px at 20% 10%, rgba(56, 189, 248, 0.08), transparent 55%),
+    radial-gradient(700px 380px at 90% 20%, rgba(34, 211, 238, 0.06), transparent 52%),
+    radial-gradient(800px 520px at 70% 90%, rgba(59, 130, 246, 0.06), transparent 55%),
+    linear-gradient(180deg, #fff, #fafafa);
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
 }
 
 input {
