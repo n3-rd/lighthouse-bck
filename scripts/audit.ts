@@ -6,7 +6,7 @@
  *        pnpm run audit https://example.com --out report.json
  */
 
-import { runLighthouseAudit } from "../src/services/lighthouse.js";
+import { runLighthouseAudit } from '../src/lib/server/lighthouse.js';
 import { writeFileSync } from "fs";
 
 const url = process.argv[2];

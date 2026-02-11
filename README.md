@@ -1,6 +1,6 @@
 # lighthouse-bck
 
-Express API that runs Lighthouse audits on URLs. Supports signup/login (magic link), credit-based audit runs, and a standalone CLI audit script that works without auth or the database.
+SvelteKit (Svelte 5) app that runs Lighthouse audits on URLs. Supports signup/login (magic link), credit-based audit runs, and a standalone CLI audit script that works without auth or the database.
 
 ## Prerequisites
 
@@ -28,8 +28,7 @@ cp .env.example .env   # then edit .env
 |----------------|----------|-------------|
 | `DATABASE_URL` | Yes (API) | PostgreSQL connection string |
 | `JWT_SECRET`   | No       | Secret for JWT cookies (default: `dev-secret-change-in-production`) |
-| `BASE_URL`     | No       | Base URL for magic links (default: `http://localhost:3000`) |
-| `PORT`         | No       | Server port (default: `3000`) |
+| `BASE_URL`     | No       | Base URL for magic links (default: `http://localhost:5173`) |
 | `CHROME_PATH`  | No       | Path to Chrome/Chromium executable if not in default macOS locations |
 
 Create `.env` with at least:
@@ -51,8 +50,9 @@ pnpm db:migrate    # run migrations (or db:push for dev)
 
 | Command         | Description |
 |-----------------|-------------|
-| `pnpm dev`      | Run API with watch |
-| `pnpm start`    | Run API |
+| `pnpm dev`      | SvelteKit dev server (default port 5173) |
+| `pnpm build`    | Production build |
+| `pnpm preview`  | Preview production build |
 | `pnpm audit`    | CLI: run Lighthouse on a URL (no auth, no DB) |
 | `pnpm db:generate` | Generate Prisma client |
 | `pnpm db:migrate`  | Run Prisma migrations |
@@ -81,34 +81,34 @@ Output: Performance, SEO, Best Practices, and Accessibility scores (0–100). Wi
 
 ## API
 
-Base URL: `http://localhost:3000` (or your `PORT`).
+Base URL: `http://localhost:5173` (Vite dev) or your deployment URL. Auth uses HTTP-only cookie `auth`.
 
 ### Health
 
-- **GET** `/health` — `{ "ok": true }`
+- **GET** `/api/health` — `{ "ok": true }`
 
 ### Auth
 
-- **POST** `/auth/signup`  
+- **POST** `/api/auth/signup`  
   Body: `{ "name": string, "email": string }`  
   Creates user with 20 credits and returns a one-time `loginLink` (magic link). In production you’d email this; in dev you can open it in the browser.
 
-- **POST** `/auth/login`  
+- **POST** `/api/auth/login`  
   Body: `{ "email": string }`  
   Returns a one-time `loginLink` for that user.
 
 - **GET** `/auth/verify?token=xxx`  
-  Magic-link callback. Validates token, sets HTTP-only `auth` cookie (JWT), returns `{ user, message }`. Redirect or open in browser to “log in”.
+  Page route. Validates token, sets HTTP-only `auth` cookie (JWT), redirects to `/`.
 
-- **GET** `/auth/me`  
+- **GET** `/api/auth/me`  
   Requires auth cookie. Returns current `{ user }`.
 
-- **POST** `/auth/logout`  
+- **POST** `/api/auth/logout`  
   Clears auth cookie.
 
 ### Audit (authenticated)
 
-- **POST** `/audit/run`  
+- **POST** `/api/audit/run`  
   Requires auth cookie.  
   Body: `{ "url": string }`  
   Cost: 5 credits per run. Deducts credits, runs Lighthouse, stores result, returns:
@@ -134,22 +134,29 @@ Base URL: `http://localhost:3000` (or your `PORT`).
 ```
 lighthouse-bck/
 ├── prisma/
-│   └── schema.prisma      # DB schema
-├── public/                # Static files
+│   └── schema.prisma
 ├── scripts/
 │   └── audit.ts           # CLI audit (no auth)
 ├── src/
-│   ├── index.ts           # Express app entry
-│   ├── db.ts              # Prisma client (pg adapter)
-│   ├── middleware/
-│   │   └── auth.ts        # JWT auth, requireAuth, signToken
-│   ├── routes/
-│   │   ├── auth.ts        # signup, login, verify, me, logout
-│   │   └── audit.ts       # POST /audit/run
-│   └── services/
-│       └── lighthouse.ts  # runLighthouseAudit(url)
+│   ├── app.html
+│   ├── app.d.ts
+│   ├── hooks.server.ts    # Set locals.user from auth cookie
+│   ├── lib/server/
+│   │   ├── db.ts          # Prisma client (pg adapter)
+│   │   ├── auth.ts        # JWT signToken, getUserFromToken
+│   │   └── lighthouse.ts  # runLighthouseAudit(url)
+│   └── routes/
+│       ├── +layout.server.ts
+│       ├── +page.svelte    # Home + audit UI
+│       ├── auth/verify/    # Magic-link callback (sets cookie, redirects)
+│       ├── auth/login/     # Login page
+│       └── api/
+│           ├── health/
+│           ├── auth/signup|login|me|logout/
+│           └── audit/run/
 ├── package.json
-├── prisma.config.ts
+├── svelte.config.js
+├── vite.config.ts
 └── tsconfig.json
 ```
 
@@ -157,7 +164,7 @@ lighthouse-bck/
 
 ## Lighthouse service
 
-`src/services/lighthouse.ts` exports `runLighthouseAudit(url: string): Promise<AuditResult>`:
+`src/lib/server/lighthouse.ts` exports `runLighthouseAudit(url: string): Promise<AuditResult>`:
 
 - Launches headless Chrome (via `chromePath` or defaults).
 - Runs Lighthouse (JSON output).
