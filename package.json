@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "tsx src/index.ts",
-    "dev": "tsx watch src/index.ts",
+    "dev": "PORT=3933 HOST=0.0.0.0 tsx watch src/index.ts",
     "audit": "tsx scripts/audit.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",

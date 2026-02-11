@@ -17,7 +17,8 @@ app.get("/health", (_req, res) => {
   res.json({ ok: true });
 });
 
-const port = Number(process.env.PORT) || 3000;
-app.listen(port, () => {
-  console.log(`Server listening on http://localhost:${port}`);
+const port = Number(process.env.PORT) || 3933;
+const host = process.env.HOST || "0.0.0.0";
+app.listen(port, host, () => {
+  console.log(`Server listening on http://${host}:${port}`);
 });
