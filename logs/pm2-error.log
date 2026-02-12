@@ -1,0 +1,53 @@
+2026-02-12 13:33:39 +01:00: Error: DATABASE_URL is required
+2026-02-12 13:33:39 +01:00:     at makePrisma (file:///root/lighthouse-bck/build/server/chunks/db-CAZOiczn.js:55:32)
+2026-02-12 13:33:39 +01:00:     at file:///root/lighthouse-bck/build/server/chunks/db-CAZOiczn.js:63:42
+2026-02-12 13:33:39 +01:00:     at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+2026-02-12 13:33:39 +01:00:     at async ModuleLoader.import (node:internal/modules/esm/loader:606:24)
+2026-02-12 13:33:39 +01:00:     at async get_hooks (file:///root/lighthouse-bck/build/server/index.js:1953:72)
+2026-02-12 13:33:39 +01:00:     at async file:///root/lighthouse-bck/build/server/index.js:5889:24
+2026-02-12 13:33:39 +01:00:     at async Server.init (file:///root/lighthouse-bck/build/server/index.js:5887:5)
+2026-02-12 13:33:39 +01:00:     at async file:///root/lighthouse-bck/build/handler.js:1232:1
+2026-02-12 16:27:41 +01:00: Error: DATABASE_URL is required
+2026-02-12 16:27:41 +01:00:     at makePrisma (file:///root/lighthouse-bck/build/server/chunks/db-CAZOiczn.js:55:32)
+2026-02-12 16:27:41 +01:00:     at file:///root/lighthouse-bck/build/server/chunks/db-CAZOiczn.js:63:42
+2026-02-12 16:27:41 +01:00:     at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+2026-02-12 16:27:41 +01:00:     at async ModuleLoader.import (node:internal/modules/esm/loader:606:24)
+2026-02-12 16:27:41 +01:00:     at async get_hooks (file:///root/lighthouse-bck/build/server/index.js:1953:72)
+2026-02-12 16:27:41 +01:00:     at async file:///root/lighthouse-bck/build/server/index.js:5889:24
+2026-02-12 16:27:41 +01:00:     at async Server.init (file:///root/lighthouse-bck/build/server/index.js:5887:5)
+2026-02-12 16:27:41 +01:00:     at async file:///root/lighthouse-bck/build/handler.js:1232:1
+2026-02-12 16:28:01 +01:00: Error: DATABASE_URL is required
+2026-02-12 16:28:01 +01:00:     at makePrisma (file:///root/lighthouse-bck/build/server/chunks/db-CAZOiczn.js:55:32)
+2026-02-12 16:28:01 +01:00:     at file:///root/lighthouse-bck/build/server/chunks/db-CAZOiczn.js:63:42
+2026-02-12 16:28:01 +01:00:     at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+2026-02-12 16:28:01 +01:00:     at async ModuleLoader.import (node:internal/modules/esm/loader:606:24)
+2026-02-12 16:28:01 +01:00:     at async get_hooks (file:///root/lighthouse-bck/build/server/index.js:1953:72)
+2026-02-12 16:28:01 +01:00:     at async file:///root/lighthouse-bck/build/server/index.js:5889:24
+2026-02-12 16:28:01 +01:00:     at async Server.init (file:///root/lighthouse-bck/build/server/index.js:5887:5)
+2026-02-12 16:28:01 +01:00:     at async file:///root/lighthouse-bck/build/handler.js:1232:1
+2026-02-12 16:29:31 +01:00: Error: DATABASE_URL is required
+2026-02-12 16:29:31 +01:00:     at makePrisma (file:///root/lighthouse-bck/build/server/chunks/db-CAZOiczn.js:55:32)
+2026-02-12 16:29:31 +01:00:     at file:///root/lighthouse-bck/build/server/chunks/db-CAZOiczn.js:63:42
+2026-02-12 16:29:31 +01:00:     at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+2026-02-12 16:29:31 +01:00:     at async ModuleLoader.import (node:internal/modules/esm/loader:606:24)
+2026-02-12 16:29:31 +01:00:     at async get_hooks (file:///root/lighthouse-bck/build/server/index.js:1953:72)
+2026-02-12 16:29:31 +01:00:     at async file:///root/lighthouse-bck/build/server/index.js:5889:24
+2026-02-12 16:29:31 +01:00:     at async Server.init (file:///root/lighthouse-bck/build/server/index.js:5887:5)
+2026-02-12 16:29:31 +01:00:     at async file:///root/lighthouse-bck/build/handler.js:1232:1
+2026-02-12 16:32:06 +01:00: Error: DATABASE_URL is required
+2026-02-12 16:32:06 +01:00:     at makePrisma (file:///root/lighthouse-bck/build/server/chunks/db-CAZOiczn.js:55:32)
+2026-02-12 16:32:06 +01:00:     at file:///root/lighthouse-bck/build/server/chunks/db-CAZOiczn.js:63:42
+2026-02-12 16:32:06 +01:00:     at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+2026-02-12 16:32:06 +01:00:     at async ModuleLoader.import (node:internal/modules/esm/loader:606:24)
+2026-02-12 16:32:06 +01:00:     at async get_hooks (file:///root/lighthouse-bck/build/server/index.js:1953:72)
+2026-02-12 16:32:06 +01:00:     at async file:///root/lighthouse-bck/build/server/index.js:5889:24
+2026-02-12 16:32:06 +01:00:     at async Server.init (file:///root/lighthouse-bck/build/server/index.js:5887:5)
+2026-02-12 16:32:06 +01:00:     at async file:///root/lighthouse-bck/build/handler.js:1232:1
+2026-02-12 16:34:50 +01:00: 
+2026-02-12 16:34:50 +01:00: [1;31m[404] GET /favicon.png[0m
+2026-02-12 16:34:56 +01:00: 
+2026-02-12 16:34:56 +01:00: [1;31m[404] GET /favicon.png[0m
+2026-02-12 16:34:58 +01:00: 
+2026-02-12 16:34:58 +01:00: [1;31m[404] GET /favicon.png[0m
+2026-02-12 16:35:01 +01:00: 
+2026-02-12 16:35:01 +01:00: [1;31m[404] GET /favicon.png[0m
