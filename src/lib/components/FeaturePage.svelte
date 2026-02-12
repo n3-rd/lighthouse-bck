@@ -58,28 +58,20 @@
     />
 
     <div class="mt-8 md:mt-[54px] w-full lg:w-[600px] max-w-full border border-zinc-300 bg-white" data-testid="box-lift">
-      <div class="hidden md:grid text-[14px] font-semibold text-zinc-800" style="grid-template-columns: 80px 90px 1fr;">
-        <div class="px-4 py-3">
+      <div class="hidden md:block text-[14px] font-semibold text-zinc-800 px-4 py-3">
+        <div class="grid items-start gap-x-4" style="grid-template-columns: 80px 90px 1fr;">
           <div>Sector</div>
-          <div class="mt-1 h-px w-full bg-zinc-400"></div>
-          {#each config.sectors as s}
-            <div class="mt-1">{s.sector}</div>
-          {/each}
-        </div>
-        <div class="px-4 py-3 text-center">
-          <div>Lift</div>
-          <div class="mt-1 h-px w-full bg-zinc-400"></div>
-          {#each config.sectors as s}
-            <div class="mt-1 font-normal text-zinc-700">{s.lift}</div>
-          {/each}
-        </div>
-        <div class="px-4 py-3 flex-1">
+          <div class="text-center">Lift</div>
           <div>Why</div>
-          <div class="mt-1 h-px w-full bg-zinc-400"></div>
-          {#each config.sectors as s}
-            <div class="mt-1 text-[14px] font-normal text-zinc-700">{s.why}</div>
-          {/each}
         </div>
+        <div class="mt-1 h-px w-full bg-zinc-400"></div>
+        {#each config.sectors as s}
+          <div class="grid items-start gap-x-4 pt-1" style="grid-template-columns: 80px 90px 1fr;">
+            <div class="font-normal">{s.sector}</div>
+            <div class="text-center font-normal text-zinc-700">{s.lift}</div>
+            <div class="text-[14px] font-normal text-zinc-700">{s.why}</div>
+          </div>
+        {/each}
       </div>
       <div class="md:hidden p-4 space-y-4 text-[14px] text-zinc-800">
         <div>
@@ -103,38 +95,38 @@
     </div>
   </div>
 
-  <div class="w-full lg:w-[600px] max-w-full px-2 md:px-0" data-testid="panel-text">
+  <div class="w-full lg:w-[600px] max-w-full min-w-0 px-2 md:px-0" data-testid="panel-text">
     <div class="min-h-[250px] md:min-h-[350px] border border-zinc-300 bg-white p-4 text-[14px] md:text-[16px] leading-relaxed text-zinc-800 rounded-none" data-testid="text-dummy">
       {@html config.description}
     </div>
 
-    <div class="mt-6 md:mt-[40px] md:ml-[40px] w-full md:w-[520px] border border-zinc-300 bg-zinc-50 p-4 md:p-5" data-testid="form-demo">
+    <div class="mt-6 md:mt-[40px] md:ml-[40px] w-full min-w-0 max-w-full md:max-w-[520px] border border-zinc-300 bg-zinc-50 p-4 md:p-5 overflow-visible" data-testid="form-demo">
       <div class="text-center text-[18px] font-semibold text-zinc-900" data-testid="text-form-title">{config.formTitle}</div>
       <div class="mt-4 grid gap-3" data-testid="group-form-fields">
-        <label class="grid gap-1">
+        <label class="grid gap-1 min-w-0">
           <span class="text-[13px] font-medium text-zinc-700">First and Last Name</span>
           <input
-            class="h-10 w-full rounded-md border border-zinc-300 bg-white px-3 text-[14px] text-zinc-900 outline-none transition-colors focus:border-zinc-500"
+            class="h-10 w-full min-w-0 rounded-md border border-zinc-300 bg-white px-3 text-[14px] text-zinc-900 outline-none transition-colors focus:border-zinc-500"
             placeholder="Jane Doe"
             autocomplete="name"
             type="text"
             bind:value={fullName}
           />
         </label>
-        <label class="grid gap-1">
+        <label class="grid gap-1 min-w-0">
           <span class="text-[13px] font-medium text-zinc-700">Email address</span>
           <input
-            class="h-10 w-full rounded-md border border-zinc-300 bg-white px-3 text-[14px] text-zinc-900 outline-none transition-colors focus:border-zinc-500"
+            class="h-10 w-full min-w-0 rounded-md border border-zinc-300 bg-white px-3 text-[14px] text-zinc-900 outline-none transition-colors focus:border-zinc-500"
             placeholder="jane@company.com"
             autocomplete="email"
             type="email"
             bind:value={email}
           />
         </label>
-        <label class="grid gap-1">
+        <label class="grid gap-1 min-w-0">
           <span class="text-[13px] font-medium text-zinc-700">Cell number</span>
           <input
-            class="h-10 w-full rounded-md border border-zinc-300 bg-white px-3 text-[14px] text-zinc-900 outline-none transition-colors focus:border-zinc-500"
+            class="h-10 w-full min-w-0 rounded-md border border-zinc-300 bg-white px-3 text-[14px] text-zinc-900 outline-none transition-colors focus:border-zinc-500"
             placeholder="+1 555 555 5555"
             autocomplete="tel"
             type="tel"
@@ -144,11 +136,11 @@
         {#if error}
           <p class="text-red-600 text-sm">{error}</p>
         {/if}
-        <div class="mt-1 flex items-center justify-between">
-          <div class="text-[14px] font-medium text-zinc-600">We will send a 5 digit code to your Cell/Email</div>
+        <div class="mt-1 flex flex-wrap items-center justify-between gap-3">
+          <div class="text-[14px] font-medium text-zinc-600 min-w-0 flex-1">We will send a 5 digit code to your Cell/Email</div>
           <button
             type="button"
-            class="h-10 w-[60px] rounded-md bg-zinc-900 text-[14px] font-semibold text-white transition-colors hover:bg-zinc-800 disabled:opacity-50"
+            class="h-10 flex-shrink-0 rounded-md bg-zinc-900 px-4 text-[14px] font-semibold text-white transition-colors hover:bg-zinc-800 disabled:opacity-50"
             disabled={submitting}
             onclick={submitDemo}
           >
@@ -156,7 +148,7 @@
           </button>
         </div>
       </div>
-      <div class="mt-4 flex flex-col items-center" data-testid="row-code-area">
+      <div class="mt-4 flex flex-col items-center overflow-visible" data-testid="row-code-area">
         {#if step === 'code'}
           <div class="mb-4 rounded-md bg-blue-50 border border-blue-200 px-4 py-3 text-center max-w-sm" data-testid="popup-check-code">
             <div class="text-[14px] font-semibold text-blue-800">Check for SMS message or Email</div>
