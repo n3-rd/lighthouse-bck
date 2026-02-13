@@ -2,7 +2,11 @@
   import FeaturePage from '$lib/components/FeaturePage.svelte';
   import { marketingPage } from '$lib/featurePageData.js';
 
-  const topRow = ['Local Ranking Tool', 'Citations', 'Reviews'];
+  const topRow: { label: string; href?: string | null }[] = [
+    { label: 'Local Ranking Tool', href: 'https://seo-rank-grid-tracker.vercel.app' },
+    { label: 'Citations', href: null },
+    { label: 'Reviews', href: null },
+  ];
   const bottomRow = [
     { label: 'Call Tracking', href: null },
     { label: 'Audit\nHidden Lighthouse', href: '/audit' },
@@ -18,12 +22,23 @@
 
 <div class="mx-auto mt-12 w-full max-w-[1300px] px-4 pb-12">
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-    {#each topRow as label}
-      <div
-        class="flex min-h-[340px] items-center justify-center rounded-lg bg-[#FF7272] px-4 py-4 text-center font-semibold text-zinc-900"
-      >
-        {label}
-      </div>
+    {#each topRow as item}
+      {#if item.href}
+        <a
+          href={item.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="flex min-h-[340px] items-center justify-center rounded-lg bg-[#FF7272] px-4 py-4 text-center font-semibold text-zinc-900 transition-opacity hover:opacity-90"
+        >
+          {item.label}
+        </a>
+      {:else}
+        <div
+          class="flex min-h-[340px] items-center justify-center rounded-lg bg-[#FF7272] px-4 py-4 text-center font-semibold text-zinc-900"
+        >
+          {item.label}
+        </div>
+      {/if}
     {/each}
     {#each bottomRow as item}
       {#if item.href}
