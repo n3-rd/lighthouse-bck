@@ -1,11 +1,17 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { prisma } from '$lib/server/db.js';
-import { runLighthouseAudit } from '$lib/server/lighthouse.js';
+import { runLighthouseAudit, runLighthouseAuditWithProgress } from '$lib/server/lighthouse.js';
 
 const AUDIT_COST = 5;
 
-export const POST: RequestHandler = async ({ request, locals }) => {
+function normalizeUrl(url: string): string {
+  const u = url.trim();
+  if (!u.startsWith('http://') && !u.startsWith('https://')) return 'https://' + u;
+  return u;
+}
+
+export const POST: RequestHandler = async ({ request, locals, url: requestUrl }) => {
   const user = locals.user;
   if (!user) {
     return json({ error: 'Not authenticated' }, { status: 401 });
@@ -16,8 +22,86 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   if (!url) {
     return json({ error: 'URL is required' }, { status: 400 });
   }
-  if (!url.startsWith('http://') && !url.startsWith('https://')) {
-    url = 'https://' + url;
+  url = normalizeUrl(url);
+  const stream = requestUrl.searchParams.get('stream') === '1';
+
+  if (stream) {
+    const encoder = new TextEncoder();
+    const streamResponse = new ReadableStream({
+      async start(controller) {
+        try {
+          await prisma.$transaction(async (tx) => {
+            const currentUser = await tx.user.findUniqueOrThrow({
+              where: { id: user.id },
+            });
+            if (currentUser.credits < AUDIT_COST) {
+              throw new Error('Insufficient credits');
+            }
+            await tx.user.update({
+              where: { id: user.id },
+              data: { credits: { decrement: AUDIT_COST } },
+            });
+            await tx.transaction.create({
+              data: {
+                userId: user.id,
+                amount: -AUDIT_COST,
+                reason: 'audit',
+                balanceAfter: currentUser.credits - AUDIT_COST,
+              },
+            });
+          });
+
+          const auditResult = await runLighthouseAuditWithProgress(url, (message) => {
+            controller.enqueue(encoder.encode(JSON.stringify({ type: 'status', message }) + '\n'));
+          });
+
+          const audit = await prisma.audit.create({
+            data: {
+              userId: user.id,
+              url,
+              performance: auditResult.performance,
+              seo: auditResult.seo,
+              accessibility: auditResult.accessibility,
+              bestPractices: auditResult.bestPractices,
+              lighthouseJson: auditResult.raw as object,
+            },
+          });
+
+          controller.enqueue(
+            encoder.encode(
+              JSON.stringify({
+                type: 'result',
+                auditId: audit.id,
+                url,
+                scores: {
+                  performance: auditResult.performance,
+                  seo: auditResult.seo,
+                  bestPractices: auditResult.bestPractices,
+                  accessibility: auditResult.accessibility,
+                },
+                creditsRemaining: user.credits - AUDIT_COST,
+              }) + '\n'
+            )
+          );
+        } catch (err: unknown) {
+          const message = err instanceof Error ? err.message : 'Audit failed to run';
+          if (message === 'Insufficient credits') {
+            controller.enqueue(
+              encoder.encode(JSON.stringify({ type: 'error', error: message, status: 402 }) + '\n')
+            );
+          } else {
+            controller.enqueue(
+              encoder.encode(JSON.stringify({ type: 'error', error: message, status: 500 }) + '\n')
+            );
+          }
+        } finally {
+          controller.close();
+        }
+      },
+    });
+    return new Response(streamResponse, {
+      headers: { 'Content-Type': 'application/x-ndjson' },
+    });
   }
 
   try {

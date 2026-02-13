@@ -26,20 +26,16 @@ function getChromePath(): string | undefined {
   return CHROME_PATHS.find((p) => existsSync(p));
 }
 
-export async function runLighthouseAudit(url: string): Promise<AuditResult> {
-  const chromePath = getChromePath();
-  const chrome = await chromeLauncher.launch({
-    chromeFlags: [
-      '--headless',
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-gpu',
-    ],
-    ...(chromePath && { chromePath }),
-  });
-  const options = { logLevel: 'info' as const, output: 'json' as const, port: chrome.port };
+const LH_STATUS_RE = /LH:status\s+(.+)/;
 
+function parseStatusFromChunk(chunk: string | Uint8Array): string | null {
+  const s = typeof chunk === 'string' ? chunk : new TextDecoder().decode(chunk);
+  const m = s.match(LH_STATUS_RE);
+  return m ? m[1].trim() : null;
+}
+
+async function runLighthouseInternal(url: string, chromePort: number): Promise<AuditResult> {
+  const options = { logLevel: 'info' as const, output: 'json' as const, port: chromePort };
   const runnerResult = await lighthouse(url, options);
   if (!runnerResult) throw new Error('Lighthouse failed to run');
 
@@ -52,8 +48,6 @@ export async function runLighthouseAudit(url: string): Promise<AuditResult> {
     };
   };
 
-  await chrome.kill();
-
   return {
     performance: Math.round((reportJson.categories?.performance?.score ?? 0) * 100),
     seo: Math.round((reportJson.categories?.seo?.score ?? 0) * 100),
@@ -61,4 +55,69 @@ export async function runLighthouseAudit(url: string): Promise<AuditResult> {
     accessibility: Math.round((reportJson.categories?.accessibility?.score ?? 0) * 100),
     raw: reportJson,
   };
+}
+
+export async function runLighthouseAudit(url: string): Promise<AuditResult> {
+  const chromePath = getChromePath();
+  const chrome = await chromeLauncher.launch({
+    chromeFlags: [
+      '--headless',
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+    ],
+    ...(chromePath && { chromePath }),
+  });
+  try {
+    return await runLighthouseInternal(url, chrome.port);
+  } finally {
+    await chrome.kill();
+  }
+}
+
+export type AuditProgressCallback = (message: string) => void;
+
+/** Run audit and call onStatus for each LH status line (from intercepted stdout). */
+export async function runLighthouseAuditWithProgress(
+  url: string,
+  onStatus: AuditProgressCallback
+): Promise<AuditResult> {
+  const chromePath = getChromePath();
+  const chrome = await chromeLauncher.launch({
+    chromeFlags: [
+      '--headless',
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+    ],
+    ...(chromePath && { chromePath }),
+  });
+
+  const patchStream = (stream: NodeJS.WriteStream) => {
+    const original = stream.write.bind(stream);
+    return (
+      chunk: string | Uint8Array,
+      encodingOrCallback?: BufferEncoding | ((err?: Error) => void),
+      callback?: (err?: Error) => void
+    ): boolean => {
+      const msg = parseStatusFromChunk(chunk);
+      if (msg) onStatus(msg);
+      const cb = typeof encodingOrCallback === 'function' ? encodingOrCallback : callback;
+      return original(chunk, encodingOrCallback as BufferEncoding, cb as (err?: Error) => void);
+    };
+  };
+  const restoreStdout = process.stdout.write.bind(process.stdout);
+  const restoreStderr = process.stderr.write.bind(process.stderr);
+  process.stdout.write = patchStream(process.stdout) as typeof process.stdout.write;
+  process.stderr.write = patchStream(process.stderr) as typeof process.stderr.write;
+
+  try {
+    return await runLighthouseInternal(url, chrome.port);
+  } finally {
+    process.stdout.write = restoreStdout;
+    process.stderr.write = restoreStderr;
+    await chrome.kill();
+  }
 }
