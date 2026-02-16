@@ -35,6 +35,7 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: normalized }),
+        credentials: 'include',
       });
       const out = await res.json();
       if (res.ok) {
@@ -60,7 +61,7 @@
 
   {#if !user}
     <p class="mt-3 text-sm text-zinc-600">
-      <a href="/audit" class="text-[#4db2ec] font-semibold underline hover:opacity-90">Sign in</a> to run an audit.
+      <a href="/audit" class="text-primary-light font-semibold underline hover:opacity-90">Sign in</a> to run an audit.
     </p>
   {:else}
     <p class="mt-1 text-[13px] text-zinc-500">{user.email} · {user.credits} credits (5 per audit)</p>
@@ -91,7 +92,7 @@
     {#if loading}
       <div class="mt-4" role="progressbar" aria-valuetext="Running audit…">
         <div class="h-2 w-full overflow-hidden rounded-full bg-zinc-200">
-          <div class="audit-progress-bar h-full rounded-full bg-[#4db2ec]"></div>
+          <div class="audit-progress-bar h-full rounded-full bg-primary-light"></div>
         </div>
       </div>
     {/if}
@@ -110,7 +111,7 @@
           <RadialScore score={result.scores.accessibility} label="Accessibility" />
         </div>
         <p class="mt-4">
-          <a href="/audit/{result.auditId}" class="text-[rgb(24,87,155)] font-semibold underline hover:opacity-90">View full details →</a>
+          <a href="/audit/{result.auditId}" class="text-primary font-semibold underline hover:opacity-90">View full details →</a>
         </p>
       </div>
     {/if}

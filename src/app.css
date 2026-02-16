@@ -1,5 +1,10 @@
 @import 'tailwindcss';
 
+@theme {
+  --color-primary: #18579b;
+  --color-primary-light: #4db2ec;
+}
+
 :root {
   --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
   --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
@@ -34,7 +39,6 @@ input {
 button {
   padding: 10px 20px;
   font-size: 16px;
-  color: white;
   border: none;
   cursor: pointer;
   border-radius: 4px;

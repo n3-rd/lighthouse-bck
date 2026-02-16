@@ -1,37 +1,53 @@
 import { env } from '$env/dynamic/private';
-import { randomBytes } from 'node:crypto';
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { prisma } from '$lib/server/db.js';
+import { signToken, verifyPassword } from '$lib/server/auth.js';
 
-const TOKEN_TTL_MS = 1000 * 60 * 30;
-const BASE_URL = env.BASE_URL ?? 'http://localhost:5173';
-
-function toLoginLink(token: string): string {
-  return `${BASE_URL}/auth/verify?token=${token}`;
-}
-
-export const POST: RequestHandler = async ({ request }) => {
-  const body = (await request.json()) as { email?: string };
+export const POST: RequestHandler = async ({ request, cookies }) => {
+  const body = (await request.json()) as { email?: string; password?: string };
   const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
-  if (!email) {
-    return json({ error: 'email required' }, { status: 400 });
+  const password = typeof body.password === 'string' ? body.password : '';
+
+  if (!email || !password) {
+    return json({ error: 'Email and password required' }, { status: 400 });
   }
-  const user = await prisma.user.findUnique({ where: { email } });
+
+  let user;
+  try {
+    user = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true, name: true, email: true, credits: true, createdAt: true, passwordHash: true },
+    });
+  } catch {
+    return json({ error: 'Invalid email or password' }, { status: 401 });
+  }
+
   if (!user) {
-    return json({ error: 'No account with this email' }, { status: 404 });
+    return json({ error: 'Invalid email or password' }, { status: 401 });
   }
-  const token = randomBytes(32).toString('hex');
-  await prisma.loginToken.create({
-    data: {
-      token,
-      userId: user.id,
-      expiresAt: new Date(Date.now() + TOKEN_TTL_MS),
-    },
+
+  if (!user.passwordHash) {
+    return json(
+      { error: 'This account has no password set. Use "Forgot password" or sign up again.' },
+      { status: 401 }
+    );
+  }
+
+  const valid = await verifyPassword(password, user.passwordHash);
+  if (!valid) {
+    return json({ error: 'Invalid email or password' }, { status: 401 });
+  }
+
+  const token = signToken({ sub: user.id, email: user.email });
+  cookies.set('auth', token, {
+    httpOnly: true,
+    secure: env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 7,
+    path: '/',
   });
-  const loginLink = toLoginLink(token);
-  return json({
-    loginLink,
-    message: 'Use the link to sign in (or check your email when configured)',
-  });
+
+  const { passwordHash: _, ...safe } = user;
+  return json({ user: safe });
 };

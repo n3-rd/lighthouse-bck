@@ -1,6 +1,5 @@
 <script lang="ts">
   import RadialScore from '$lib/components/RadialScore.svelte';
-  import { invalidateAll } from '$app/navigation';
 
   let { data } = $props();
   let url = $state('');
@@ -14,43 +13,6 @@
   let loading = $state(false);
   let progress = $state(0);
   let error = $state('');
-
-  let formFullName = $state('');
-  let formEmail = $state('');
-  let formCell = $state('');
-  let formSubmitting = $state(false);
-  let formError = $state('');
-
-  async function submitAccessForm(e: Event) {
-    e.preventDefault();
-    if (!formEmail.trim()) {
-      formError = 'Email is required';
-      return;
-    }
-    formError = '';
-    formSubmitting = true;
-    try {
-      const res = await fetch('/api/demo-signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fullName: formFullName.trim(),
-          email: formEmail.trim().toLowerCase(),
-          cell: formCell.trim(),
-        }),
-      });
-      const out = await res.json();
-      if (res.ok) {
-        await invalidateAll();
-      } else {
-        formError = out.error ?? 'Something went wrong';
-      }
-    } catch (err) {
-      formError = err instanceof Error ? err.message : 'Request failed';
-    } finally {
-      formSubmitting = false;
-    }
-  }
 
   function normalizeUrl(input: string): string {
     const u = input.trim();
@@ -75,6 +37,7 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: normalized }),
+        credentials: 'include',
       });
       if (!res.ok || !res.body) {
         const out = await res.json().catch(() => ({}));
@@ -143,54 +106,8 @@
   <title>Quick Audit — ClearSKY</title>
 </svelte:head>
 
-{#if !data.user}
-  <div class="mx-auto max-w-md rounded-lg border border-zinc-300 bg-zinc-50 p-6">
-    <h2 class="text-lg font-semibold text-zinc-900">Enter your details to run an audit</h2>
-    <p class="mt-1 text-sm text-zinc-600">Name, email, and number are required before using the audit.</p>
-    <form class="mt-6 grid gap-4" onsubmit={submitAccessForm}>
-      <label class="grid gap-1">
-        <span class="text-[13px] font-medium text-zinc-700">First and Last Name</span>
-        <input
-          type="text"
-          class="h-10 w-full rounded-md border border-zinc-300 bg-white px-3 text-[14px] text-zinc-900 outline-none focus:border-zinc-500"
-          placeholder="Jane Doe"
-          bind:value={formFullName}
-        />
-      </label>
-      <label class="grid gap-1">
-        <span class="text-[13px] font-medium text-zinc-700">Email address</span>
-        <input
-          type="email"
-          class="h-10 w-full rounded-md border border-zinc-300 bg-white px-3 text-[14px] text-zinc-900 outline-none focus:border-zinc-500"
-          placeholder="jane@company.com"
-          bind:value={formEmail}
-          required
-        />
-      </label>
-      <label class="grid gap-1">
-        <span class="text-[13px] font-medium text-zinc-700">Cell number</span>
-        <input
-          type="tel"
-          class="h-10 w-full rounded-md border border-zinc-300 bg-white px-3 text-[14px] text-zinc-900 outline-none focus:border-zinc-500"
-          placeholder="+1 555 555 5555"
-          bind:value={formCell}
-        />
-      </label>
-      {#if formError}
-        <p class="text-sm text-red-600">{formError}</p>
-      {/if}
-      <button
-        type="submit"
-        class="h-10 rounded-md bg-zinc-900 px-4 text-[14px] font-semibold text-white hover:bg-zinc-800 disabled:opacity-50"
-        disabled={formSubmitting}
-      >
-        {formSubmitting ? 'Submitting…' : 'Continue to audit'}
-      </button>
-    </form>
-  </div>
-{:else}
-  <p class="text-zinc-600">Signed in as {data.user.email} · {data.user.credits} credits (5 per audit)</p>
-  <form class="mt-4 flex flex-col sm:flex-row gap-3 max-w-xl" onsubmit={(e) => { e.preventDefault(); runAudit(); }}>
+<p class="text-zinc-600">Signed in as {data.user!.email} · {data.user!.credits} credits (5 per audit)</p>
+<form class="mt-4 flex flex-col sm:flex-row gap-3 max-w-xl" onsubmit={(e) => { e.preventDefault(); runAudit(); }}>
     <input
       type="text"
       class="h-10 flex-1 rounded-md border border-zinc-300 bg-white px-3 text-[14px] text-zinc-900 outline-none focus:border-zinc-500"
@@ -205,7 +122,7 @@
     <div class="mt-4 max-w-xl" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100} aria-valuetext={status}>
       <div class="h-2 w-full overflow-hidden rounded-full bg-zinc-200">
         <div
-          class="h-full rounded-full bg-[#4db2ec] transition-[width] duration-300 ease-out"
+          class="h-full rounded-full bg-primary-light transition-[width] duration-300 ease-out"
           style="width: {progress}%"
         ></div>
       </div>
@@ -224,8 +141,7 @@
         <RadialScore score={result.scores.accessibility} label="Accessibility" />
       </div>
       <p>
-        <a href="/audit/{result.auditId}" class="text-[rgb(24,87,155)] font-semibold underline">View full details →</a>
+        <a href="/audit/{result.auditId}" class="text-primary font-semibold underline">View full details →</a>
       </p>
     </div>
   {/if}
-{/if}

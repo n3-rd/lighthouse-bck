@@ -169,7 +169,7 @@
           <div class="mt-6 flex justify-center w-full" data-testid="row-host-cta">
             <a
               href="/audit"
-              class="inline-flex h-12 md:h-14 items-center justify-center rounded-md px-4 md:px-8 text-[16px] md:text-[24px] font-semibold text-white shadow-sm transition-colors hover:bg-orange-600 bg-[#4db2ec]"
+              class="inline-flex h-12 md:h-14 items-center justify-center rounded-md px-4 md:px-8 text-[16px] md:text-[24px] font-semibold text-white shadow-sm transition-colors hover:bg-orange-600 bg-primary-light"
               data-testid="button-host-cta"
             >
               Run a Quick Audit

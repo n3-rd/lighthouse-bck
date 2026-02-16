@@ -34,7 +34,8 @@
             href={item.href}
             class="text-[15px] font-semibold no-underline transition-colors"
             class:underline={isActive(item.href, item.slug)}
-            style:color={isActive(item.href, item.slug) ? 'rgb(24, 87, 155)' : 'rgb(95, 187, 240)'}
+            class:text-primary={isActive(item.href, item.slug)}
+            class:text-primary-light={!isActive(item.href, item.slug)}
           >
             {item.label}
           </a>

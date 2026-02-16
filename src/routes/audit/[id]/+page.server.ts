@@ -1,11 +1,11 @@
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/db.js';
 
-export const load: PageServerLoad = async ({ params, locals }) => {
+export const load: PageServerLoad = async ({ params, locals, url }) => {
   const user = locals.user;
   if (!user) {
-    throw error(401, 'Sign in to view this audit');
+    throw redirect(302, '/auth/login?redirect=' + encodeURIComponent(url.pathname));
   }
   const id = params.id;
   if (!id) throw error(404, 'Not found');

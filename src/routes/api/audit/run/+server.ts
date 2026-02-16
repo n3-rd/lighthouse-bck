@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { prisma } from '$lib/server/db.js';
+import { requireAuth } from '$lib/server/auth.js';
 import { runLighthouseAudit, runLighthouseAuditWithProgress } from '$lib/server/lighthouse.js';
 
 const AUDIT_COST = 5;
@@ -12,10 +13,7 @@ function normalizeUrl(url: string): string {
 }
 
 export const POST: RequestHandler = async ({ request, locals, url: requestUrl }) => {
-  const user = locals.user;
-  if (!user) {
-    return json({ error: 'Not authenticated' }, { status: 401 });
-  }
+  const user = requireAuth(locals);
 
   const body = (await request.json()) as { url?: string };
   let url = typeof body.url === 'string' ? body.url.trim() : '';

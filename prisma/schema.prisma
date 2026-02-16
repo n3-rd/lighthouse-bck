@@ -11,11 +11,12 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  credits   Int      @default(20)
-  createdAt DateTime @default(now())
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String?  // null only for legacy users; new signups require password
+  credits      Int      @default(20)
+  createdAt    DateTime @default(now())
 
   loginTokens   LoginToken[]
   transactions  Transaction[]

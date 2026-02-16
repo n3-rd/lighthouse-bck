@@ -1,6 +1,9 @@
 <script lang="ts">
   import FeaturePage from '$lib/components/FeaturePage.svelte';
+  import AuthModal from '$lib/components/AuthModal.svelte';
   import { marketingPage } from '$lib/featurePageData.js';
+
+  let { data } = $props();
 
   const topRow: { label: string; href?: string | null }[] = [
     { label: 'Local Ranking Tool', href: 'https://seo-rank-grid-tracker.vercel.app' },
@@ -12,6 +15,17 @@
     { label: 'Audit\nHidden Lighthouse', href: '/audit' },
     { label: 'AI Search', href: null },
   ];
+
+  let authModalOpen = $state(false);
+
+  function handleGridClick(item: { href?: string | null }) {
+    if (data.user) return;
+    authModalOpen = true;
+  }
+
+  const gridBaseClass = 'flex min-h-[340px] cursor-pointer items-center justify-center rounded-lg px-4 py-4 text-center font-semibold text-zinc-900 transition-opacity hover:opacity-90';
+  const topCardClass = 'bg-[#FF7272]';
+  const bottomCardClass = 'bg-[#FFDADA] whitespace-pre-line';
 </script>
 
 <svelte:head>
@@ -23,38 +37,48 @@
 <div class="mx-auto mt-12 w-full max-w-[1300px] px-4 pb-12">
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
     {#each topRow as item}
-      {#if item.href}
+      {#if data.user && item.href}
         <a
           href={item.href}
           target="_blank"
           rel="noopener noreferrer"
-          class="flex min-h-[340px] items-center justify-center rounded-lg bg-[#FF7272] px-4 py-4 text-center font-semibold text-zinc-900 transition-opacity hover:opacity-90"
+          class="{gridBaseClass} {topCardClass}"
         >
           {item.label}
         </a>
       {:else}
-        <div
-          class="flex min-h-[340px] items-center justify-center rounded-lg bg-[#FF7272] px-4 py-4 text-center font-semibold text-zinc-900"
+        <button
+          type="button"
+          class="{gridBaseClass} {topCardClass} border-0"
+          onclick={() => handleGridClick(item)}
         >
           {item.label}
-        </div>
+        </button>
       {/if}
     {/each}
     {#each bottomRow as item}
-      {#if item.href}
+      {#if data.user && item.href}
         <a
           href={item.href}
-          class="flex min-h-[340px] items-center justify-center rounded-lg bg-[#FFDADA] px-4 py-4 text-center font-semibold text-zinc-900 whitespace-pre-line transition-opacity hover:opacity-90"
+          class="{gridBaseClass} {bottomCardClass}"
         >
           {item.label}
         </a>
       {:else}
-        <div
-          class="flex min-h-[340px] items-center justify-center rounded-lg bg-[#FFDADA] px-4 py-4 text-center font-semibold text-zinc-900 whitespace-pre-line"
+        <button
+          type="button"
+          class="{gridBaseClass} {bottomCardClass} border-0"
+          onclick={() => handleGridClick(item)}
         >
           {item.label}
-        </div>
+        </button>
       {/if}
     {/each}
   </div>
 </div>
+
+<AuthModal
+  open={authModalOpen}
+  redirectAfter="/audit"
+  onclose={() => (authModalOpen = false)}
+/>
