@@ -21,6 +21,39 @@ model User {
   loginTokens   LoginToken[]
   transactions  Transaction[]
   audits        Audit[]
+  phoneNumbers  PhoneNumber[]
+  callLogs      CallLog[]
+}
+
+model PhoneNumber {
+  id                   String   @id @default(cuid())
+  userId               String
+  phoneNumber          String   // E.164
+  telnyxPhoneNumberId  String?  // Telnyx resource ID
+  createdAt            DateTime @default(now())
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  callLogs CallLog[]
+
+  @@unique([userId, phoneNumber])
+}
+
+model CallLog {
+  id              String   @id @default(cuid())
+  userId          String
+  phoneNumberId   String
+  direction       String   // inbound | outbound
+  fromNumber      String
+  toNumber        String
+  durationSeconds Int?
+  createdAt       DateTime @default(now())
+  telnyxCallId    String?  // for idempotency / link
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  phoneNumber PhoneNumber @relation(fields: [phoneNumberId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([phoneNumberId, createdAt])
 }
 
 model LoginToken {

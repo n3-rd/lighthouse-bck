@@ -11,7 +11,7 @@
     { label: 'Reviews', href: null },
   ];
   const bottomRow = [
-    { label: 'Call Tracking', href: null },
+    { label: 'Call Tracking', href: '/call-tracking' },
     { label: 'Audit\nHidden Lighthouse', href: '/audit' },
     { label: 'AI Search', href: null },
   ];
