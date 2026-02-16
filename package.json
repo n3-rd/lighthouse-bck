@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
-    "postbuild": "pm2 reload ecosystem.config.cjs --update-env",
+    "postbuild": "pm2 delete lighthouse-bck 2>/dev/null; pm2 reload ecosystem.config.cjs --update-env",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",

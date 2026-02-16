@@ -3,4 +3,5 @@ node_modules
 /generated/prisma
 .svelte-kit
 build
-logs
+logs/*
+/logs/*

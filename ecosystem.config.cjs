@@ -4,7 +4,7 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
 module.exports = {
   apps: [
     {
-      name: 'lighthouse-bck',
+      name: 'clearskysoftware',
       script: './build/index.js',
       cwd: __dirname,
       instances: 1,
