@@ -1,6 +1,14 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { invalidateAll } from '$app/navigation';
   import logo from '../../static/logo.png';
+
+  const user = $derived($page.data?.user ?? null);
+
+  async function logout() {
+    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    await invalidateAll();
+  }
 
   type NavItem = { href: string; label: string; slug: string };
   const navItems: NavItem[] = [
@@ -42,5 +50,17 @@
         {/each}
       </nav>
     </div>
+    {#if user}
+      <div class="flex items-center gap-2">
+        <span class="text-[14px] text-zinc-500">{user.email}</span>
+        <button
+          type="button"
+          onclick={logout}
+          class="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-[14px] font-medium text-zinc-700 transition-colors hover:bg-zinc-50"
+        >
+          Log out
+        </button>
+      </div>
+    {/if}
   </div>
 </header>
